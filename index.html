@@ -5,137 +5,290 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-Kelas SKSE | Sekolah Kebangsaan Simpang Empat</title>
     
-    <!-- Tailwind CSS (Framework Penggayaan) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Supabase JS Library (Ditambah) -->
+    <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- Google Fonts (Nunito untuk rupa yang lebih mesra & sesuai sekolah rendah) -->
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- Particles.js -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- FontAwesome (Ikon) -->
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         body {
             font-family: 'Nunito', sans-serif;
-            background-color: #fff7ed;
-            background-image: url('https://images.unsplash.com/photo-1588072432836-e10dc3279995?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            /* Latar belakang gradient lembut */
+            background: linear-gradient(180deg, #fff7ed 0%, #fef3c7 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
         }
         
-        .bg-overlay {
-            background: rgba(255, 251, 235, 0.90); 
+        /* Container Particles.js */
+        #particles-js {
             position: fixed;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
+            top: 0;
+            left: 0;
+            z-index: 0; 
         }
 
         .school-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(5px);
-            border: 3px solid #fbbf24;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            background: rgba(255, 255, 255, 0.90);
+            backdrop-filter: blur(10px);
+            border: 4px solid #fff; /* Border putih tebal */
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
         }
 
-        .link-card {
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* Hiasan Ilustrasi Kartun (Stickers) */
+        .cartoon-sticker {
+            position: absolute;
+            z-index: 20;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1));
+            pointer-events: none;
+            animation: float 6s ease-in-out infinite;
         }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        .sticker-tl { top: -20px; left: -20px; color: #facc15; font-size: 3rem; transform: rotate(-15deg); } 
+        .sticker-tr { top: -30px; right: -20px; color: #f472b6; font-size: 3rem; transform: rotate(15deg); } 
+        .sticker-bl { bottom: -20px; left: -20px; color: #3b82f6; font-size: 2.5rem; transform: rotate(-10deg); } 
+        .sticker-br { bottom: -25px; right: -15px; color: #22c55e; font-size: 2.5rem; transform: rotate(10deg); } 
+
+        /* KAD PAUTAN & KESAN HOVER */
+        .link-card {
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            /* Border default dikawal dalam JS, style ini untuk backup transition */
+        }
+        
         .link-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.08);
+            transform: translateY(-5px);
+            z-index: 20;
+        }
+        
+        /* Kesan Kilat/Shine */
+        .link-card::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
+        }
+        
+        .link-card:hover::after {
+            left: 100%;
         }
         
         .link-card:hover .card-icon {
-            transform: scale(1.1) rotate(5deg);
+            transform: scale(1.15) rotate(10deg);
         }
         .card-icon {
-            transition: transform 0.3s ease;
+            transition: transform 0.4s ease;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fff7ed; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #fcd34d; 
+            border-radius: 4px;
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+<body class="min-h-screen flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8"> <!-- Ditambah padding py-12 ke py-16 -->
 
-    <!-- Background Overlay -->
-    <div class="bg-overlay"></div>
+    <!-- Particles Container -->
+    <div id="particles-js"></div>
+
+    <!-- Hiasan Latar Belakang Tetap -->
+    <i class="fa-solid fa-cloud text-white/40 text-6xl absolute top-10 left-10 animate-pulse"></i>
+    <i class="fa-solid fa-cloud text-white/40 text-5xl absolute top-20 right-20 animate-pulse" style="animation-delay: 1s;"></i>
 
     <!-- Container Utama -->
-    <div class="max-w-md w-full space-y-8 school-card p-8 rounded-3xl relative overflow-hidden">
+    <div class="w-full max-w-md md:max-w-4xl space-y-10 school-card p-8 md:p-12 rounded-[3rem] relative overflow-visible animate__animated animate__zoomIn transition-all duration-500"> <!-- Padding dan spacing ditambah -->
         
-        <!-- Hiasan Warna Warni Sekolah Rendah di Atas -->
-        <div class="absolute top-0 left-0 w-full h-3 flex">
-            <div class="w-1/4 bg-red-500"></div>
+        <!-- Ilustrasi Kartun (Stickers) -->
+        <i class="fa-solid fa-sun cartoon-sticker sticker-tl"></i>
+        <i class="fa-solid fa-rainbow cartoon-sticker sticker-tr text-pink-400"></i>
+        <i class="fa-solid fa-book-open cartoon-sticker sticker-bl"></i>
+        <i class="fa-solid fa-pencil cartoon-sticker sticker-br"></i>
+
+        <!-- Jalur Warna Warni -->
+        <div class="absolute top-0 left-0 w-full h-5 flex rounded-t-[2.7rem] overflow-hidden">
+            <div class="w-1/4 bg-red-400"></div>
             <div class="w-1/4 bg-yellow-400"></div>
-            <div class="w-1/4 bg-green-500"></div>
-            <div class="w-1/4 bg-blue-500"></div>
+            <div class="w-1/4 bg-green-400"></div>
+            <div class="w-1/4 bg-blue-400"></div>
         </div>
 
         <!-- Bahagian Header / Logo -->
-        <div class="text-center pt-2">
+        <div class="text-center pt-6 md:mb-12 relative z-10"> <!-- Ditambah padding-top dan margin-bottom -->
             <!-- Logo SKSE -->
-            <div class="mx-auto h-36 w-36 bg-white rounded-full flex items-center justify-center shadow-lg mb-4 border-4 border-yellow-400 overflow-hidden relative transform hover:scale-105 transition duration-500">
+            <div class="mx-auto h-36 w-36 md:h-44 md:w-44 bg-white rounded-full flex items-center justify-center shadow-xl mb-6 border-[5px] border-yellow-300 overflow-hidden relative transform hover:scale-105 transition duration-500 animate__animated animate__bounceInDown animate__delay-1s">
                 <img src="https://i.postimg.cc/W4vLfYrm/LOGO-SKSE-utk-background-putih-(2).jpg" alt="Logo SKSE" class="w-full h-full object-contain p-2">
             </div>
             
-            <h2 class="mt-2 text-3xl font-extrabold text-gray-800 tracking-tight">
+            <h2 class="mt-6 text-3xl md:text-5xl font-extrabold text-gray-800 tracking-tight animate__animated animate__fadeInUp animate__delay-1s" style="text-shadow: 2px 2px 0px #fef3c7;">
                 E-Kelas SKSE
             </h2>
-            <div class="inline-block px-4 py-1.5 bg-blue-100 rounded-full mt-2 shadow-sm">
-                <p class="text-sm text-blue-800 font-bold uppercase tracking-wide">
+            <div class="inline-block px-6 py-2.5 bg-sky-100 border-2 border-sky-200 rounded-full mt-5 shadow-sm animate__animated animate__fadeInUp animate__delay-1s">
+                <p class="text-sm md:text-lg text-sky-800 font-bold uppercase tracking-wide">
                     SK Simpang Empat
                 </p>
             </div>
-            <p class="mt-3 text-sm text-gray-600 font-semibold">
-                Portal Guru & Staf
+            <p class="mt-4 text-base md:text-lg text-gray-500 font-semibold animate__animated animate__fadeInUp animate__delay-2s">
+                Portal Ceria Guru & Staf
             </p>
         </div>
 
-        <!-- Bahagian Pautan (Butang/Kad Interaktif) -->
-        <!-- ID 'links-container' ditambah untuk sasaran JavaScript -->
-        <div id="links-container" class="mt-8 space-y-6 min-h-[200px]">
+        <!-- Bahagian Pautan (Grid Layout) -->
+        <!-- Ditambah jarak grid (gap-8) dan margin atas (mt-12) -->
+        <div id="links-container" class="mt-12 space-y-6 md:space-y-0 md:grid md:grid-cols-2 md:gap-8 min-h-[200px] relative z-10">
             
-            <!-- Loading State (Sementara data ditarik) -->
-            <div class="animate-pulse space-y-4 text-center text-gray-400">
-                <p>Memuatkan pautan...</p>
-                <div class="h-24 bg-gray-200 rounded-xl w-full"></div>
-                <div class="h-24 bg-gray-200 rounded-xl w-full"></div>
+            <!-- Loading State -->
+            <div class="col-span-full flex flex-col items-center justify-center py-10 space-y-8">
+                <div class="text-center">
+                    <i class="fa-solid fa-circle-notch fa-spin text-5xl text-yellow-400 mb-4"></i>
+                    <p class="text-gray-400 text-sm font-bold tracking-widest animate-pulse">MEMUATKAN...</p>
+                </div>
+                <!-- Skeleton Loader Pastel -->
+                <div class="w-full grid md:grid-cols-2 gap-8">
+                    <div class="w-full animate-pulse flex items-center p-6 bg-blue-50 border border-blue-100 rounded-[2rem]">
+                        <div class="h-16 w-16 rounded-2xl bg-blue-200"></div>
+                        <div class="ml-6 flex-grow space-y-3">
+                            <div class="h-5 bg-blue-200 rounded w-3/4"></div>
+                            <div class="h-3 bg-blue-100 rounded w-1/2"></div>
+                        </div>
+                    </div>
+                    <div class="w-full animate-pulse flex items-center p-6 bg-pink-50 border border-pink-100 rounded-[2rem]">
+                        <div class="h-16 w-16 rounded-2xl bg-pink-200"></div>
+                        <div class="ml-6 flex-grow space-y-3">
+                            <div class="h-5 bg-pink-200 rounded w-2/3"></div>
+                            <div class="h-3 bg-pink-100 rounded w-1/3"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <!-- Kod JavaScript akan menggantikan kandungan di sini dengan data dari Supabase -->
-            <!-- Jika JavaScript gagal, pautan statik boleh diletakkan di sini sebagai backup -->
 
         </div>
 
         <!-- Footer -->
-        <div class="mt-12 text-center border-t-2 border-dashed border-gray-200 pt-6">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
+        <!-- Ditambah margin atas (mt-16) dan padding (pt-8) -->
+        <div class="mt-16 text-center border-t-2 border-dashed border-gray-200 pt-8 animate__animated animate__fadeIn animate__delay-2s relative z-10">
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-5">
                 &copy; 2026 SK Simpang Empat
             </p>
-            <div class="flex justify-center space-x-6">
-                <a href="#" class="transform hover:scale-110 hover:-translate-y-1 transition duration-300 text-white bg-blue-600 h-10 w-10 rounded-full flex items-center justify-center shadow-md hover:shadow-lg"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="#" class="transform hover:scale-110 hover:-translate-y-1 transition duration-300 text-white bg-red-600 h-10 w-10 rounded-full flex items-center justify-center shadow-md hover:shadow-lg"><i class="fa-brands fa-youtube"></i></a>
-                <a href="#" class="transform hover:scale-110 hover:-translate-y-1 transition duration-300 text-white bg-pink-600 h-10 w-10 rounded-full flex items-center justify-center shadow-md hover:shadow-lg"><i class="fa-brands fa-instagram"></i></a>
+            <div class="flex justify-center space-x-5">
+                <a href="#" class="transform hover:scale-110 hover:-translate-y-1 transition duration-300 text-white bg-blue-400 h-11 w-11 rounded-full flex items-center justify-center shadow-md hover:shadow-lg"><i class="fa-brands fa-facebook-f text-lg"></i></a>
+                <a href="#" class="transform hover:scale-110 hover:-translate-y-1 transition duration-300 text-white bg-red-400 h-11 w-11 rounded-full flex items-center justify-center shadow-md hover:shadow-lg"><i class="fa-brands fa-youtube text-lg"></i></a>
+                <a href="#" class="transform hover:scale-110 hover:-translate-y-1 transition duration-300 text-white bg-pink-400 h-11 w-11 rounded-full flex items-center justify-center shadow-md hover:shadow-lg"><i class="fa-brands fa-instagram text-lg"></i></a>
             </div>
         </div>
     </div>
 
-    <!-- Script Integrasi Supabase -->
+    <!-- Script Integrasi -->
     <script>
-        // Konfigurasi Supabase
+        /* --- 1. Particles.js Configuration (Pastel Colors) --- */
+        document.addEventListener('DOMContentLoaded', function() {
+            particlesJS("particles-js", {
+                "particles": {
+                    "number": { "value": 40, "density": { "enable": true, "value_area": 800 } },
+                    "color": { "value": ["#fca5a5", "#fcd34d", "#6ee7b7", "#93c5fd", "#c4b5fd"] }, 
+                    "shape": {
+                        "type": ["circle", "triangle"], 
+                        "stroke": { "width": 0, "color": "#000000" }
+                    },
+                    "opacity": {
+                        "value": 0.6,
+                        "random": true
+                    },
+                    "size": {
+                        "value": 10,
+                        "random": true
+                    },
+                    "line_linked": { "enable": false }, 
+                    "move": {
+                        "enable": true,
+                        "speed": 1.5,
+                        "direction": "none",
+                        "random": true,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false,
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": { "enable": true, "mode": "bubble" },
+                        "onclick": { "enable": true, "mode": "push" },
+                        "resize": true
+                    },
+                    "modes": {
+                        "bubble": { "distance": 200, "size": 15, "duration": 2, "opacity": 0.8 }
+                    }
+                },
+                "retina_detect": true
+            });
+        });
+
+        /* --- 2. Supabase & Confetti Logic --- */
         const SUPABASE_URL = 'https://mmerlvcnwwoxzratypbk.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tZXJsdmNud3dveHpyYXR5cGJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcxODU1NTEsImV4cCI6MjA4Mjc2MTU1MX0.WPGIOPOP6FX_BF4uuw2anrttmjB1BHKBKl8rYcXf8vo';
         
-        // Perubahan: Menukar nama variable kepada 'supabaseClient' untuk elak konflik dengan library
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        function triggerConfetti(e) {
+            confetti({
+                particleCount: 120,
+                spread: 80,
+                origin: { y: 0.7 },
+                colors: ['#f472b6', '#fbbf24', '#34d399', '#60a5fa'] 
+            });
+            
+            if (e && e.clientX) {
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
+                confetti({
+                    particleCount: 60,
+                    spread: 60,
+                    origin: { x: x, y: y },
+                    scalar: 0.8
+                });
+            }
+        }
+
         async function fetchLinks() {
-            // Tarik data dari table 'links' menggunakan client yang baru dinamakan
             const { data, error } = await supabaseClient
                 .from('links')
                 .select('*')
@@ -145,47 +298,80 @@
 
             if (error) {
                 console.error('Error fetching links:', error);
-                container.innerHTML = '<p class="text-red-500 text-center">Gagal memuatkan pautan. Sila semak sambungan Supabase.</p>';
+                container.innerHTML = '<div class="col-span-full text-center p-4"><p class="text-red-400 font-bold bg-red-50 p-6 rounded-3xl">Gagal memuatkan pautan.<br><span class="text-xs font-normal text-gray-500">Sila semak sambungan internet anda.</span></p></div>';
                 return;
             }
 
             if (data && data.length > 0) {
-                container.innerHTML = ''; // Kosongkan loading skeleton
+                setTimeout(() => {
+                    container.innerHTML = ''; 
 
-                data.forEach(link => {
-                    // Tetapkan warna default jika tiada dalam DB
-                    const color = link.theme_color || 'blue';
-                    
-                    // Bina HTML kad
-                    const html = `
-                    <a href="${link.url}" target="_blank" class="link-card group relative flex items-center p-5 bg-white border-l-8 border-${color}-500 rounded-r-2xl rounded-l-md shadow-md hover:border-${color}-600 text-decoration-none overflow-hidden">
-                        <!-- Hiasan Latar Belakang -->
-                        <div class="absolute right-0 top-0 h-24 w-24 bg-${color}-50 rounded-full -mr-10 -mt-10 opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
+                    data.forEach((link, index) => {
+                        const color = link.theme_color || 'blue';
                         
-                        <div class="flex-shrink-0 relative z-10">
-                            <div class="card-icon h-14 w-14 rounded-2xl bg-gradient-to-br from-${color}-400 to-${color}-600 flex items-center justify-center shadow-lg text-white">
-                                <i class="fa-solid ${link.icon_class} text-2xl"></i>
+                        const animationClass = `animate__animated animate__fadeInUp animate__fast`;
+                        const animationStyle = `animation-delay: ${index * 150}ms;`; 
+
+                        let hoverEffect = '';
+                        switch(color) {
+                            case 'blue':
+                            case 'sky':
+                            case 'cyan': hoverEffect = 'hover:rotate-1'; break;
+                            case 'green':
+                            case 'emerald':
+                            case 'lime': hoverEffect = 'hover:-translate-y-3'; break;
+                            case 'purple':
+                            case 'violet':
+                            case 'indigo': hoverEffect = 'hover:skew-x-1 hover:-translate-y-1'; break;
+                            case 'pink':
+                            case 'red':
+                            case 'rose': hoverEffect = 'hover:scale-105'; break;
+                            case 'yellow':
+                            case 'orange':
+                            case 'amber': hoverEffect = 'hover:-rotate-1'; break;
+                            default: hoverEffect = 'hover:-translate-y-2';
+                        }
+                        
+                        // Perubahan di sini:
+                        // 1. Padding ditambah kepada p-6
+                        // 2. Ditambah border-2 dengan opacity 40/30 (border-opacity-40)
+                        // 3. Kekalkan border-l-8 untuk identiti
+                        const html = `
+                        <a href="${link.url}" 
+                           target="_blank" 
+                           onclick="triggerConfetti(event)"
+                           style="${animationStyle}" 
+                           class="${animationClass} ${hoverEffect} link-card group relative flex items-center p-6 bg-${color}-50 border-l-[6px] border-${color}-400 border-2 border-r-${color}-200 border-t-${color}-200 border-b-${color}-200 rounded-[2rem] shadow-sm hover:shadow-lg text-decoration-none overflow-hidden h-full">
+                            
+                            <!-- Hiasan Latar Belakang -->
+                            <div class="absolute right-0 top-0 h-32 w-32 bg-white/50 rounded-full -mr-10 -mt-10 opacity-70 group-hover:scale-150 transition-transform duration-500"></div>
+                            
+                            <div class="flex-shrink-0 relative z-10">
+                                <div class="card-icon h-16 w-16 rounded-2xl bg-white border-2 border-${color}-200 flex items-center justify-center shadow-sm text-${color}-500 group-hover:bg-${color}-500 group-hover:text-white transition-all duration-300">
+                                    <i class="fa-solid ${link.icon_class} text-2xl"></i>
+                                </div>
                             </div>
-                        </div>
-                        <div class="ml-5 relative z-10 flex-grow">
-                            <p class="text-lg font-extrabold text-gray-800 group-hover:text-${color}-700 transition-colors">${link.title}</p>
-                            <p class="text-xs text-gray-500 font-semibold mt-1 bg-${color}-50 inline-block px-2 py-0.5 rounded text-${color}-600">
-                                <i class="fa-solid fa-circle-info mr-1"></i>${link.subtitle || 'Info'}
-                            </p>
-                        </div>
-                        <div class="relative z-10">
-                            <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-${color}-500 text-xl transition-colors transform group-hover:translate-x-1"></i>
-                        </div>
-                    </a>
-                    `;
-                    container.insertAdjacentHTML('beforeend', html);
-                });
+                            <div class="ml-6 relative z-10 flex-grow">
+                                <p class="text-xl font-extrabold text-gray-700 group-hover:text-${color}-700 transition-colors line-clamp-2">${link.title}</p>
+                                <p class="text-xs text-gray-500 font-bold mt-2 bg-white/70 inline-block px-3 py-1 rounded-full text-${color}-600 border border-${color}-100 shadow-sm">
+                                    ${link.subtitle || 'Info'}
+                                </p>
+                            </div>
+                            <div class="relative z-10 pl-3">
+                                <div class="h-10 w-10 rounded-full bg-white/60 flex items-center justify-center group-hover:bg-white transition-colors shadow-sm">
+                                    <i class="fa-solid fa-chevron-right text-${color}-300 group-hover:text-${color}-500 text-base transition-colors transform group-hover:translate-x-1"></i>
+                                </div>
+                            </div>
+                        </a>
+                        `;
+                        container.insertAdjacentHTML('beforeend', html);
+                    });
+                }, 500); 
             } else {
-                container.innerHTML = '<p class="text-gray-500 text-center">Tiada pautan ditemui dalam pangkalan data.</p>';
+                container.innerHTML = '<div class="col-span-full text-center"><p class="text-gray-500">Tiada pautan ditemui.</p></div>';
             }
         }
 
-        // Jalankan fungsi semasa halaman dimuatkan
         fetchLinks();
     </script>
 </body>
